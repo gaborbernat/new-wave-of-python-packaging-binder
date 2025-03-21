@@ -1,4 +1,3 @@
 .venv
 .*_cache
 .github
-cert.pem
