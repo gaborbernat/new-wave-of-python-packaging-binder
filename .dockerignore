@@ -7,3 +7,8 @@
 /README.md
 /tox.toml
 /pyproject.toml
+/.git
+/.tox
+/.pre-commit-config.yaml
+/.dockerignore
+/.gitignore

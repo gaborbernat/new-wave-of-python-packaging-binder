@@ -14,5 +14,5 @@ To run it:
 
    ```shell
    docker build -t my-image . --progress=plain
-   docker run -it --rm -p 8888:8888 my-image
+   docker run -it --rm -p 8888:8888 my-image jupyter lab --ip='*' --NotebookApp.token=''
    ```
