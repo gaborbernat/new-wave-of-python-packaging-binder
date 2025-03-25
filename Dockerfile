@@ -20,7 +20,11 @@ COPY *.pem /etc/pki/ca-trust/source/anchors/
 RUN set -x && if [ -f "/etc/pki/ca-trust/source/anchors/cert.pem" ]; then \
     update-ca-trust && \
     echo -e "sslcacert=/etc/pki/ca-trust/source/anchors/cert.pem\n" >> /etc/dnf/dnf.conf; \
-    fi && dnf -y update && dnf -y install clang python3 fish lsd bat which clear && dnf clean all
+    fi &&\
+    dnf -y update && \
+    dnf -y install gcc python3 nodejs \
+    fish hyperfine lsd bat which clear && \
+    dnf clean all
 
 # install uv python with jupyter notebook
 RUN set -x && curl -LsSf https://astral.sh/uv/install.sh | sh && \
@@ -28,11 +32,25 @@ RUN set -x && curl -LsSf https://astral.sh/uv/install.sh | sh && \
     uv tool install --no-cache jupyter-core  \
     --with jupyter \
     --with jupyter-resource-usage \
-    --with jupyterlab-execute-time \
-    --with jupyterlab-lsp
+    --with jupyterlab-execute-time && \
+    ln -s $HOME/.local/share/uv/tools/jupyter-core/bin/jupyter-lab $HOME/.local/bin/jupyter-lab
+
+RUN mkdir -p $HOME/.config/lsd && echo -e 'icons:\n  theme: unicode' >>$HOME/.config/lsd/config.yaml
+WORKDIR ${HOME}
+COPY package.json package-lock.json ${HOME}/
+RUN npm install --no-fund
+RUN jupyter labextension disable "@jupyterlab/apputils-extension:announcements" && \
+    mkdir -p /home/jovyan/.local/share/uv/tools/jupyter-core/share/jupyter/lab/settings && \
+    cat <<EOF >> /home/jovyan/.local/share/uv/tools/jupyter-core/share/jupyter/lab/settings/overrides.json
+    {
+    "@jupyterlab/apputils-extension:themes": {
+        "theme": "JupyterLab Dark"
+    }
+    }
+EOF
+
 
 # copy repo content so is available within the image
-WORKDIR ${HOME}
 COPY . ${HOME}
 USER root
 RUN chown -R ${NB_UID} ${HOME}

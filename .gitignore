@@ -1,4 +1,5 @@
-.venv
-.*_cache
-.github
-cert.pem
+/.venv
+/.*_cache
+/.github
+/cert.pem
+/node_modules

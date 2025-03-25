@@ -1,3 +1,4 @@
-.venv
-.*_cache
-.github
+/.venv
+/.*_cache
+/.github
+/node_modules

@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "bash-language-server": "^5.4.3",
+    "pyright": "^1.1.397"
+  }
+}
