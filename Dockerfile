@@ -2,16 +2,16 @@ FROM fedora:latest
 
 ARG NB_USER=jovyan
 ARG NB_UID=1000
-ENV USER=${NB_USER}
-ENV NB_UID=${NB_UID}
-ENV HOME=/home/${NB_USER}
-ENV PATH=$HOME/.local/bin:${PATH}
+ENV USER=$NB_USER
+ENV NB_UID=$NB_UID
+ENV HOME=/home/$NB_USER
+ENV PATH=$HOME/.local/bin:$PATH
 ENV SHELL=/usr/bin/fish
 ENV UV_NATIVE_TLS=1
 ENV CC=gcc
 
 # create user
-RUN useradd -c "Default user" --uid ${NB_UID} ${NB_USER}
+RUN useradd -c "Default user" --uid $NB_UID $NB_USER
 # faster dnf
 RUN echo -e "max_parallel_downloads=10\nrpmverbosity=debug\n" >> /etc/dnf/dnf.conf
 
@@ -35,9 +35,10 @@ RUN set -x && curl -LsSf https://astral.sh/uv/install.sh | sh && \
     --with jupyterlab-execute-time
 
 # Install npm dependencies
-WORKDIR ${HOME}
-COPY package.json package-lock.json ${HOME}/
-RUN $HOME/.local/share/uv/tools/jupyter-core/bin/jlpm install
+WORKDIR $HOME
+COPY package.json $HOME/
+RUN $HOME/.local/share/uv/tools/jupyter-core/bin/jlpm install && \
+    rm $HOME/yarn.lock
 
 # Expose python3 with jupyter-lab onto the PATH (from uv tool env)
 RUN cat <<EOF >> $HOME/.local/bin/python3
@@ -64,10 +65,10 @@ RUN set -x && jupyter labextension disable "@jupyterlab/apputils-extension:annou
 EOF
 
 # copy repo content so is available within the image
-COPY . ${HOME}
+COPY . $HOME
 USER root
-RUN chown -R ${NB_UID} ${HOME}
-USER ${NB_USER}
+RUN chown -R $NB_UID $HOME
+USER $NB_USER
 
 # Set the default command to start JupyterLab
 CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888"]

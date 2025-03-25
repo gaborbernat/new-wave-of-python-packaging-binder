@@ -2,3 +2,4 @@
 /.*_cache
 /.github
 /node_modules
+/Dockerfile
