@@ -26,19 +26,33 @@ RUN set -x && if [ -f "/etc/pki/ca-trust/source/anchors/cert.pem" ]; then \
     fish hyperfine lsd bat which clear && \
     dnf clean all
 
-# install uv python with jupyter notebook
+# Install uv python with jupyter notebook
 RUN set -x && curl -LsSf https://astral.sh/uv/install.sh | sh && \
     uv python install 3.13 && \
     uv tool install --no-cache jupyter-core  \
     --with jupyter \
     --with jupyter-resource-usage \
-    --with jupyterlab-execute-time && \
-    ln -s $HOME/.local/share/uv/tools/jupyter-core/bin/jupyter-lab $HOME/.local/bin/jupyter-lab
+    --with jupyterlab-execute-time
 
-RUN mkdir -p $HOME/.config/lsd && echo -e 'icons:\n  theme: unicode' >>$HOME/.config/lsd/config.yaml
+# Install npm dependencies
 WORKDIR ${HOME}
 COPY package.json package-lock.json ${HOME}/
-RUN npm install --no-fund
+RUN $HOME/.local/share/uv/tools/jupyter-core/bin/jlpm install
+
+# Expose python3 with jupyter-lab onto the PATH (from uv tool env)
+RUN cat <<EOF >> $HOME/.local/bin/python3
+#!/bin/bash
+$HOME/.local/share/uv/tools/jupyter-core/bin/python "\$@"
+EOF
+RUN chmod a+x $HOME/.local/bin/python3 && \
+    ln -s $HOME/.local/share/uv/tools/jupyter-core/bin/jupyter-lab $HOME/.local/bin/jupyter-lab && \
+    python3 -c 'import jupyterlab; print(jupyterlab)'
+
+
+# use unicode icons for lsd (as default fonts don't support fancy theme)
+RUN mkdir -p $HOME/.config/lsd && echo -e 'icons:\n  theme: unicode' >>$HOME/.config/lsd/config.yaml
+
+# disable jupyterlab announcements and set dark theme
 RUN set -x && jupyter labextension disable "@jupyterlab/apputils-extension:announcements" && \
     mkdir -p /home/jovyan/.local/share/uv/tools/jupyter-core/share/jupyter/lab/settings && \
     cat <<EOF >> /home/jovyan/.local/share/uv/tools/jupyter-core/share/jupyter/lab/settings/overrides.json
@@ -48,7 +62,6 @@ RUN set -x && jupyter labextension disable "@jupyterlab/apputils-extension:annou
     }
     }
 EOF
-
 
 # copy repo content so is available within the image
 COPY . ${HOME}
