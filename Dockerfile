@@ -39,7 +39,7 @@ RUN mkdir -p $HOME/.config/lsd && echo -e 'icons:\n  theme: unicode' >>$HOME/.co
 WORKDIR ${HOME}
 COPY package.json package-lock.json ${HOME}/
 RUN npm install --no-fund
-RUN jupyter labextension disable "@jupyterlab/apputils-extension:announcements" && \
+RUN set -x && jupyter labextension disable "@jupyterlab/apputils-extension:announcements" && \
     mkdir -p /home/jovyan/.local/share/uv/tools/jupyter-core/share/jupyter/lab/settings && \
     cat <<EOF >> /home/jovyan/.local/share/uv/tools/jupyter-core/share/jupyter/lab/settings/overrides.json
     {
