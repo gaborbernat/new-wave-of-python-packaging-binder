@@ -1,0 +1,13 @@
+[project]
+name = "new-wave-of-python-packaging"
+version = "1.0.0"
+requires-python = "==3.13"
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.13",
+]
+
+[dependency-groups]
+dev = [
+  "jupyter",
+]

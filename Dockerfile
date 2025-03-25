@@ -38,7 +38,7 @@ RUN set -x && curl -LsSf https://astral.sh/uv/install.sh | sh && \
 WORKDIR $HOME
 COPY package.json $HOME/
 RUN $HOME/.local/share/uv/tools/jupyter-core/bin/jlpm install && \
-    rm $HOME/yarn.lock
+    rm $HOME/yarn.lock $HOME/package.json
 
 # Expose python3 with jupyter-lab onto the PATH (from uv tool env)
 RUN cat <<EOF >> $HOME/.local/bin/python3
@@ -66,6 +66,7 @@ EOF
 
 # copy repo content so is available within the image
 COPY . $HOME
+RUN rm -rf package.json *.pem
 USER root
 RUN chown -R $NB_UID $HOME
 USER $NB_USER

@@ -1,0 +1,11 @@
+requires = [ "tox>=4.24.2", "tox-uv>=1.25" ]
+env_list = [
+  "dev",
+]
+
+[env.dev]
+base_python = [ "3.13" ]
+description = "generate a DEV environment"
+package = "skip"
+commands = [ [ "uv", "pip", "tree" ], [ "python", "-c", "import sys; print(sys.executable)" ] ]
+dependency_groups = [ "dev" ]

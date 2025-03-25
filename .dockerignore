@@ -3,3 +3,7 @@
 /.github
 /node_modules
 /Dockerfile
+/binder
+/README.md
+/tox.toml
+/pyproject.toml
