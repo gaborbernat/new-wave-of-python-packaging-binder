@@ -10,10 +10,8 @@ ENV SHELL=/usr/bin/fish
 ENV UV_NATIVE_TLS=1
 ENV CC=gcc
 
-# create user
-RUN useradd -c "Default user" --uid $NB_UID $NB_USER
 # faster dnf
-RUN echo -e "max_parallel_downloads=10" >> /etc/dnf/dnf.conf
+RUN echo -e "fastestmirror=True\nmax_parallel_downloads=10" >> /etc/dnf/dnf.conf
 
 # Install OS dependencies with custom certificate support - cert.pem at project root
 COPY *.pem /etc/pki/ca-trust/source/anchors/
@@ -22,12 +20,12 @@ RUN set -x && if [ -f "/etc/pki/ca-trust/source/anchors/cert.pem" ]; then \
     echo -e "sslcacert=/etc/pki/ca-trust/source/anchors/cert.pem\n" >> /etc/dnf/dnf.conf; \
     fi &&\
     dnf -y update && \
-    dnf -y install python3 \
+    dnf -y install python3 python3-pip \
     nodejs cargo \
     gcc \
     fish \
     hyperfine lsd bat \
-    which clear tree vim && \
+    which clear tree vim unzip diffutils git tig && \
     dnf clean all
 
 # Install uv python with jupyter notebook
@@ -87,7 +85,7 @@ RUN set -x && jupyter labextension disable "@jupyterlab/apputils-extension:annou
 EOF
 
 RUN mkdir -p  $HOME/.config/fish/ && \
-    echo -e "\nstarship init fish | source\nset fish_greeting\nset LS_COLORS (vivid generate snazzy)" >> $HOME/.config/fish/config.fish && \
+    echo -e "\nstarship init fish | source\nset fish_greeting\nset LS_COLORS (vivid generate snazzy)\nabbr --add g git\nabbr --add t tig\nabbr --add lt lsd --tree -a --depth 2\nabbr --add l lsd -a" >> $HOME/.config/fish/config.fish && \
     cat <<EOF >> $HOME/.config/starship.toml
 add_newline = false
 [line_break]
@@ -141,8 +139,12 @@ ENV BAT_THEME="TwoDark"
 # copy repo content so is available within the image
 WORKDIR $HOME/w
 COPY . $HOME/w
-RUN rm -rf package.json *.pem
-USER root
+RUN rm -rf *.pem
+
+# create user
+RUN useradd -c "Default user" --uid $NB_UID $NB_USER
+# Allow the user to run sudo without a password
+RUN echo "$NB_USER ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 RUN chown -R $NB_UID $HOME
 USER $NB_USER
 
