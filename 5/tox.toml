@@ -1,0 +1,25 @@
+requires = [ "tox>=4.24.1", "tox-uv>=1.25" ]
+env_list = [ "3.13", "3.12", "type" ]
+
+[env_run_base]
+description = "Run test under {base_python}"
+package = "wheel"
+wheel_build_env = ".pkg"
+dependency_groups = [ "test" ]
+commands = [
+  [ "pytest", "--durations", "10", { replace = "posargs", extend = true, default = [  ] } ],
+]
+
+[env.type]
+package = "editable"
+description = "Run Python type checker"
+dependency_groups = [ "type" ]
+commands = [
+  [ "pyright", { replace = "posargs", extend = true, default = [ "primes" ] } ],
+]
+
+[env.dev]
+description = "Create a development environment"
+package = "editable"
+dependency_groups = [ "dev" ]
+commands = [ [ "uv", "pip", "tree" ] ]

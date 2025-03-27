@@ -1,0 +1,25 @@
+[build-system]
+build-backend = "hatchling.build"
+requires = [
+  "hatch-vcs>=0.4",
+]
+
+[project]
+name = "primes"
+version = "1.0.0"
+description = "Generate primes"
+authors = [
+  { name = "Bernat Gabor", email = "gaborjbernat@gmail.com" },
+]
+requires-python = ">=3.12"
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+dependencies = [  ]
+scripts.primes = "primes:run"
+
+[dependency-groups]
+dev = [ "pytest>=8.3.5", { include-group = "type" } ]
+type = [ "pyright>=1.1.397" ]

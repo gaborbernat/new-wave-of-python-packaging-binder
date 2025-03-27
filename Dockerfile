@@ -10,10 +10,8 @@ ENV SHELL=/usr/bin/fish
 ENV UV_NATIVE_TLS=1
 ENV CC=gcc
 
-# create user
-RUN useradd -c "Default user" --uid $NB_UID $NB_USER
 # faster dnf
-RUN echo -e "max_parallel_downloads=10" >> /etc/dnf/dnf.conf
+RUN echo -e "fastestmirror=True\nmax_parallel_downloads=10" >> /etc/dnf/dnf.conf
 
 # Install OS dependencies with custom certificate support - cert.pem at project root
 COPY *.pem /etc/pki/ca-trust/source/anchors/
@@ -22,13 +20,16 @@ RUN set -x && if [ -f "/etc/pki/ca-trust/source/anchors/cert.pem" ]; then \
     echo -e "sslcacert=/etc/pki/ca-trust/source/anchors/cert.pem\n" >> /etc/dnf/dnf.conf; \
     fi &&\
     dnf -y update && \
-    dnf -y install python3 \
+    dnf -y install python3 python3-pip \
     nodejs cargo \
     gcc \
     fish \
     hyperfine lsd bat \
-    which clear tree vim && \
-    dnf clean all
+    which clear tree vim unzip diffutils git tig && \
+    dnf clean all && \
+    if [ -f "/etc/pki/ca-trust/source/anchors/cert.pem" ]; then \
+    pip config set global.cert /etc/pki/ca-trust/source/anchors/cert.pem; \
+    fi
 
 # Install uv python with jupyter notebook
 RUN set -x && curl -LsSf https://astral.sh/uv/install.sh | sh && \
@@ -36,7 +37,9 @@ RUN set -x && curl -LsSf https://astral.sh/uv/install.sh | sh && \
     uv tool install --no-cache jupyter-core  \
     --with jupyter \
     --with jupyter-resource-usage \
-    --with jupyterlab-execute-time
+    --with jupyterlab-execute-time && \
+    uv tool install pypiserver && \
+    mkdir -p $HOME/packages
 
 # Install npm dependencies
 WORKDIR $HOME
@@ -86,27 +89,30 @@ RUN set -x && jupyter labextension disable "@jupyterlab/apputils-extension:annou
     }
 EOF
 
-RUN mkdir -p  $HOME/.config/fish/ && \
-    echo -e "\nstarship init fish | source\nset fish_greeting\nset LS_COLORS (vivid generate snazzy)" >> $HOME/.config/fish/config.fish && \
-    cat <<EOF >> $HOME/.config/starship.toml
+RUN mkdir -p $HOME/.config/fish/ && cat <<EOF >> $HOME/.config/fish/config.fish
+starship init fish | source
+set fish_greeting
+set LS_COLORS (vivid generate snazzy)
+abbr --add g git
+abbr --add t tig
+abbr --add lt lsd --tree -a --depth 2
+abbr --add l lsd -a
+EOF
+
+RUN cat <<EOF >> $HOME/.config/starship.toml
 add_newline = false
 [line_break]
 disabled = true
-
 [cmd_duration]
 min_time = 250
 show_milliseconds = true
-
 [directory]
 truncation_length = 8
 truncate_to_repo = false
-
 [docker_context]
 disabled = true
-
 [package]
 disabled = true
-
 [container]
 disabled = true
 EOF
@@ -141,8 +147,12 @@ ENV BAT_THEME="TwoDark"
 # copy repo content so is available within the image
 WORKDIR $HOME/w
 COPY . $HOME/w
-RUN rm -rf package.json *.pem
-USER root
+RUN rm -rf *.pem
+
+# create user
+RUN useradd -c "Default user" --uid $NB_UID $NB_USER
+# Allow the user to run sudo without a password
+RUN echo "$NB_USER ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 RUN chown -R $NB_UID $HOME
 USER $NB_USER
 

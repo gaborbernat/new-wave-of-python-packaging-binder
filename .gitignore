@@ -1,5 +1,10 @@
-/.venv
+.venv
 /.*_cache
 /.github
-/cert.pem
+*.pem
 /node_modules
+dist
+*.egg-info
+*.c
+build
+*.so

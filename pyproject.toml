@@ -1,7 +1,7 @@
 [project]
 name = "new-wave-of-python-packaging"
 version = "1.0.0"
-requires-python = "==3.13"
+requires-python = "==3.13.*"
 classifiers = [
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.13",
@@ -9,5 +9,31 @@ classifiers = [
 
 [dependency-groups]
 dev = [
+  "httpx",
   "jupyter",
+  "rich",
+  "truststore",
 ]
+
+[tool.ruff]
+line-length = 120
+format.preview = true
+lint.select = [
+  "ALL",
+]
+lint.ignore = [
+  "CPY",
+  "D",
+  "DTZ007",
+  "INP001",
+  "PLC2701",
+  "PLR2004",
+  "S101",
+  "T201",
+]
+lint.isort = { known-first-party = [
+  "primes",
+], required-imports = [
+  "from __future__ import annotations",
+] }
+lint.preview = true

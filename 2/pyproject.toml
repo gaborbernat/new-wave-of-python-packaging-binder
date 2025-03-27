@@ -1,0 +1,33 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [
+  "cython>=3.0.12",
+  "setuptools>=74.1",
+]
+
+[project]
+name = "primes"
+version = "1.0.0"
+description = "Generate primes"
+authors = [
+  { name = "Bernat Gabor", email = "gaborjbernat@gmail.com" },
+]
+requires-python = ">=3.12"
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+dependencies = [  ]
+scripts.primes = "primes:run"
+scripts.primes-fast = "primes:run_fast"
+
+[dependency-groups]
+dev = [ "pytest>=8.3.5", { include-group = "type" } ]
+type = [ "pyright>=1.1.397" ]
+
+[tool.setuptools]
+ext-modules = [
+  { name = "_primes", sources = [ "primes/_primes.pyx" ] },
+]
+packages = [ "primes" ]
