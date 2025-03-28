@@ -1,4 +1,5 @@
 import sys
+from _primes import primes as first_n_fast
 
 
 def first_n(count: int) -> list[int]:
@@ -16,6 +17,10 @@ def first_n(count: int) -> list[int]:
 
 def run() -> None:
     print(first_n(int(sys.argv[1]))[-1])
+
+
+def run_fast() -> None:
+    print(first_n_fast(int(sys.argv[1]))[-1])
 
 
 __all__ = ["first_n", "run"]

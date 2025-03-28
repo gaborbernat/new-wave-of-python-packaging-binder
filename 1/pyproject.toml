@@ -1,7 +1,8 @@
 [build-system]
-build-backend = "hatchling.build"
+build-backend = "setuptools.build_meta"
 requires = [
-  "hatch-vcs>=0.4",
+  "cython>=3.0.12",
+  "setuptools>=74.1",
 ]
 
 [project]
@@ -19,6 +20,13 @@ classifiers = [
 ]
 dependencies = [  ]
 scripts.primes = "primes:run"
+scripts.primes-fast = "primes:run_fast"
 
 [dependency-groups]
 dev = [ "pytest" ]
+
+[tool.setuptools]
+ext-modules = [
+  { name = "_primes", sources = [ "primes/_primes.pyx" ] },
+]
+packages = [ "primes" ]
