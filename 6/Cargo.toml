@@ -1,0 +1,30 @@
+[package]
+name = "primes"
+version = "1.0.0"
+description = "Calculate the first N print numbers"
+repository = "https://github.com/gaborbernat/new-wave-of-python-packaging-binder"
+license = "MIT"
+edition = "2021"
+
+[lib]
+name = "_lib"
+path = "rust/src/main.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.24.1", features = ["abi3-py38"] } # integration with Python
+
+[features]
+extension-module = ["pyo3/extension-module"]
+default = ["extension-module"]
+
+[dev-dependencies]
+rstest = { version = "0.25.0" } # parametrized tests
+
+[workspace.lints.clippy]
+all = "warn"
+pedantic = "warn"
+nursery = "warn"
+
+[workspace.lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(tarpaulin_include)'] }
