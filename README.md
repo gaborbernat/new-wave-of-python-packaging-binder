@@ -17,8 +17,9 @@ To run it:
    ```
 
    Visit http://127.0.0.1:8888/lab and make sure the page loads with success.
-   
+
 2. locally, by loading the pre-built image:
+
    ```
    docker pull gaborjbernat/new-wave-of-python-packaging-binder:latest
    docker run -it --rm -p 8888:8888 gaborjbernat/new-wave-of-python-packaging-binder:latest jupyter lab --ip='*' --NotebookApp.token=''
@@ -26,5 +27,5 @@ To run it:
 
    Visit http://127.0.0.1:8888/lab and make sure the page loads with success.
 
-3. In Binder, [click here](https://mybinder.org/v2/gh/gaborbernat/new-wave-of-python-packaging-binder/HEAD).
-   Note, the stability of the Binder platform can fluctuate so the local setup is strongly prefered.
+3. In Binder, [click here](https://mybinder.org/v2/gh/gaborbernat/new-wave-of-python-packaging-binder/HEAD). Note, the
+   stability of the Binder platform can fluctuate so the local setup is strongly preferred.
