@@ -27,3 +27,4 @@ To run it:
    Visit http://127.0.0.1:8888/lab and make sure the page loads with success.
 
 3. In Binder, [click here](https://mybinder.org/v2/gh/gaborbernat/new-wave-of-python-packaging-binder/HEAD).
+   Note, the stability of the Binder platform can fluctuate so the local setup is strongly prefered.
